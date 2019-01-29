@@ -63,7 +63,7 @@ def parse_one_rss_entry(rss_entry_dict, keys_to_keep=KEYS_TO_KEEP):
 
 
 def build_source(rss_entries, source_head_url, news_source_name,
-                 rss_feed_name, rss_feed_url):
+                 rss_feed_name, rss_feed_url, feed_python_title):
     """
     Build newspaper source object and force articles based on rss
         into it manually (to use multithreading later)
@@ -73,13 +73,15 @@ def build_source(rss_entries, source_head_url, news_source_name,
     :param rss_feed_name: str, name of the rss feed, e.g. 'Top Stories'
     :param rss_feed_url: str, url of the rs feed, e.g.
         'http://rss.cnn.com/rss/cnn_topstories.rss'
+    :param feed_python_title: str, programmatic name for the feed,
+        e.g. 'cnn_politics'
     :return paper: a newspaper Source object
     """
     # Initialize Source objects, representing newspapers:
     paper = Source(rss_feed_url, memoize_articles=False)
     paper.build()
     # Do custom description:
-    paper.description = news_source_name + ' ' + rss_feed_name
+    paper.description = feed_python_title
 
     # Build article list:
     articles = []
@@ -130,14 +132,17 @@ def compile_papers(rss_feeds_dict):
     source_head_url = rss_feeds_dict['source_head_url']
     rss_feeds = rss_feeds_dict['rss_feeds']
     papers = []
-    for a_feed in rss_feeds.items():
-        rss_feed_name, rss_feed_url = a_feed
-        rss_entries = download_rss_entries(rss_feed_url)
+    for a_feed in rss_feeds:
+        feed_python_title = a_feed['feed_python_title']
+        feed_site_title = a_feed['feed_site_title']
+        feed_rss_link = a_feed['feed_rss_link']
+        rss_entries = download_rss_entries(feed_rss_link)
         a_paper = build_source(rss_entries=rss_entries,
                                source_head_url=source_head_url,
                                news_source_name=news_source_name,
-                               rss_feed_name=rss_feed_name,
-                               rss_feed_url=rss_feed_url)
+                               rss_feed_name=feed_site_title,
+                               rss_feed_url=feed_rss_link,
+                               feed_python_title=feed_python_title)
         papers.append(a_paper)
 
     return papers

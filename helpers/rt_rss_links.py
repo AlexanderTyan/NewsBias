@@ -7,37 +7,44 @@ keys.
 RT_LINKS_DICT = {'news_source_name': 'RT',
                  'source_head_url': 'https://www.rt.com/',
                  'rss_feeds':
-                     {'Main Page': 'https://www.rt.com/rss/',
-                      'World News': 'https://www.rt.com/rss/news/',
-                      'USA News': 'https://www.rt.com/rss/usa/',
-                      'UK News': 'https://www.rt.com/rss/uk/',
-                      'Sport News': 'https://www.rt.com/sport/',
-                      'Russia News': 'https://www.rt.com/russia/',
-                      'Business News': 'https://www.rt.com/business/',
-                      'Health': 'http://rss.cnn.com/rss/cnn_health.rss',
-                      'Entertainment':
-                          'http://rss.cnn.com/rss/cnn_showbiz.rss',
-                      'Travel': 'http://rss.cnn.com/rss/cnn_travel.rss',
-                      'Most Recent': 'http://rss.cnn.com/rss/cnn_latest.rss'
-                      }
+                     [
+                         {'feed_python_title': 'rt_main_page',
+                          'feed_site_title': 'Main Page',
+                          'feed_rss_link': 'https://www.rt.com/rss/'},
+                         {'feed_python_title': 'rt_world_news',
+                          'feed_site_title': 'World News',
+                          'feed_rss_link': 'https://www.rt.com/rss/news/'},
+                         {'feed_python_title': 'rt_usa_news',
+                          'feed_site_title': 'USA News',
+                          'feed_rss_link': 'https://www.rt.com/rss/usa/'},
+                         {'feed_python_title': 'rt_uk_news',
+                          'feed_site_title': 'UK News',
+                          'feed_rss_link': 'https://www.rt.com/rss/uk/'},
+                         {'feed_python_title': 'rt_sport_news',
+                          'feed_site_title': 'Sport News',
+                          'feed_rss_link': 'https://www.rt.com/sport/'},
+                         {'feed_python_title': 'rt_russia_news',
+                          'feed_site_title': 'Russia News',
+                          'feed_rss_link': 'https://www.rt.com/russia/'},
+                         {'feed_python_title': 'rt_business_news',
+                          'feed_site_title': 'Business News',
+                          'feed_rss_link': 'https://www.rt.com/business/'},
+                         {'feed_python_title': 'rt_health',
+                          'feed_site_title': 'Health',
+                          'feed_rss_link': 'http://rss.cnn.com/rss/cnn_health.rss'},
+                         {'feed_python_title':'rt_entertainment',
+                          'feed_site_title': 'Entertainment',
+                          'feed_rss_link': 'http://rss.cnn.com/rss/cnn_showbiz.rss'},
+                         {'feed_python_title': 'rt_travel',
+                          'feed_site_title': 'Travel',
+                          'feed_rss_link': 'http://rss.cnn.com/rss/cnn_travel.rss'},
+                         {'feed_python_title': 'rt_most_recent',
+                          'feed_site_title': 'Most Recent',
+                          'feed_rss_link': 'http://rss.cnn.com/rss/cnn_latest.rss'}
+                     ]
                  }
 
 # For omitted RSS feed links:
 RT_OMITTED_LINKS_DICT = {'Op-ed': 'https://www.rt.com/op-ed/',
                          'RT360': 'https://www.rt.com/360/'
                          }
-
-news_site = RT_LINKS_DICT['news_source_name'].lower()
-for feed_site_title, feed_rss_link in RT_LINKS_DICT['rss_feeds'].items():
-    feed_python_title = '\'' + \
-                        news_site + '_' + \
-                        feed_site_title.lower().replace(' ', '_') + \
-                        '\','
-    print("{'feed_python_title':" + feed_python_title)
-    print(" 'feed_site_title': \'" + feed_site_title + '\',')
-    print(" 'feed_rss_link': '" + feed_rss_link + '\'}')
-
-    #print(feed_site_title)
-    #print(feed_rss_link)
-
-

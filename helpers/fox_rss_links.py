@@ -7,7 +7,7 @@ keys.
 FOX_LINKS_DICT = {'news_source_name': 'Fox News',
                   'source_head_url': 'http://www.foxnews.com/',
                   'rss_feeds':
-                      {
+                      [
                           {'feed_python_title': 'fox_latest_headlines',
                            'feed_site_title': 'Latest Headlines',
                            'feed_rss_link':
@@ -43,18 +43,12 @@ FOX_LINKS_DICT = {'news_source_name': 'Fox News',
                            'feed_rss_link': 'http://feeds.foxnews.com/foxnews/national'},
                           {'feed_python_title': 'fox_world',
                            'feed_site_title': 'World',
-                           'feed_rss_link': 'http://feeds.foxnews.com/foxnews/world'},
-                          {'feed_python_title': 'dafafdsfd',
-                           'feed_site_title': 'fafdaf',
-                           'feed_rss_link': 'dsfsafdafdasfdas'},
-                          {'feed_python_title': 'dafafdsfd',
-                           'feed_site_title': 'fafdaf',
-                           'feed_rss_link': 'dsfsafdafdasfdas'}
-                       }
+                           'feed_rss_link': 'http://feeds.foxnews.com/foxnews/world'}
+                      ]
                   }
 
 # For omitted RSS feed links:
-RT_OMITTED_LINKS_DICT = {'Opinion': 'http://feeds.foxnews.com/foxnews/opinion',
+FOX_OMITTED_LINKS_DICT = {'Opinion': 'http://feeds.foxnews.com/foxnews/opinion',
                          'Video': 'https://feeds.foxnews.com/foxnews/video',
                          'Travel':
                              'http://feeds.foxnews.com/foxnews/internal/travel/mixed'}
