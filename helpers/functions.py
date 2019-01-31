@@ -4,7 +4,10 @@
 __author__ = 'Alexander Tyan'
 __version__ = 0.1
 
+import datetime
 from dateutil.parser import parse  # To parse date strings
+# Works better than Python's native multiprocessing for Class methods:
+import multiprocess
 import csv
 import feedparser as fp  # To parse RSS syntax
 from newspaper import Source  # To build newspaper objects manually
@@ -18,6 +21,7 @@ KEYS_TO_KEEP = ['title', 'link', 'id', 'published', 'published_parsed',
 
 def download_rss_entries(rss_link):
     """
+    TODO: add description
     :param rss_link: string, rss link URL
     :return all_entries: list of dictionaries, rss entries
     """
@@ -121,6 +125,24 @@ def art_multithread_downloads(papers, threads_per_source):
     news_pool.join()
 
 
+def multiprocess_article_downloads(many_papers_list):
+    """
+    Given a list of lists of newspaper objects, parallelize article downloads
+        on the upper list level (i.e. multiprocess lists)
+    :param many_papers_list: list of lists of newspaper objects
+    :return None: multiprocess downloads
+    """
+    # Multiprocess parsing:
+    processes = []
+    for paper_list in many_papers_list:
+        p = multiprocess.Process(target=art_multithread_downloads,
+                                 args=(paper_list, 2))  # 2 threads per source
+        processes.append(p)
+        p.start()
+    for process in processes:
+        process.join()
+
+
 def compile_papers(rss_feeds_dict):
     """
     TODO: elaborate on the format of rss_feeds_dict
@@ -146,6 +168,35 @@ def compile_papers(rss_feeds_dict):
         papers.append(a_paper)
 
     return papers
+
+
+def parse_paper_articles(newspaper_obj):
+    """
+    Given a newspaper object, parse all of its articles sequentially.
+    :param newspaper_obj: newspaper object with articles already downloaded
+    :return: None, just calls parse() on every article.
+    """
+    for article in newspaper_obj.articles:
+        article.parse()
+
+
+def multiprocess_parsing_paper_articles(papers_list):
+    """
+    Multiprocess parsing articles associated with each newspaper object in
+        the papers_list. Parsing of articles withing each newspaper is
+        sequential, but staring the parsing for each newspaper is parallel.
+    :param papers_list: list of newspaper objects
+    :return None:
+    """
+    # Multiprocess parsing:
+    processes = []
+    for paper in papers_list:
+        p = multiprocess.Process(target=parse_paper_articles,
+                                 args=(paper,))
+        processes.append(p)
+        p.start()
+    for process in processes:
+        process.join()
 
 
 def conform_art_attrib(article_obj):
@@ -177,21 +228,39 @@ def conform_art_attrib(article_obj):
     #article_obj.text = clean_text_string(article_obj.text)
 
 
-def write_out_articles(csv_output, newspaper_obj):
+def write_out_articles(newspaper_obj, filepath, writeout_type='conventional'):
     """
-
-    :param csv_output:
+    TODO: finish this docstring
     :param newspaper_obj:
+    :param filepath: str, filepath, WITHOUT the filename
+    :param writeout_type: str, 'custom' or 'conventional'
     :return:
     """
-    with open(csv_output, 'w') as outcsv:
+    now = datetime.datetime.now()
+    current_date = '{}_{}_{}'.format(str(now.year),
+                                     str(now.month),
+                                     str(now.day))
+    if writeout_type == 'custom':
+        csv_name = filepath + current_date + '_' + newspaper_obj.description \
+                   + '.csv'
+    else:
+        csv_name = filepath + current_date + '_' + newspaper_obj.brand + '.csv'
+    with open(csv_name, 'w', encoding='utf-8') as outcsv:
         writer = csv.writer(outcsv)
-        writer.writerow(['source_url', 'url', 'title', 'movies', 'text',
-                         'keywords', 'meta_keywords', 'tags', 'authors',
-                         'publish_date', 'summary', 'html', 'article_html',
-                         'meta_description', 'meta_data', 'canonical_link',
-                         'rss_title', 'rss_link', 'rss_id', 'rss_published',
-                         'rss_published_parsed', 'rss_feedburner_origlink'])
+        if writeout_type == 'conventional':
+            header = ['source_url', 'url', 'title', 'movies', 'text',
+                      'keywords', 'meta_keywords', 'tags', 'authors',
+                      'publish_date', 'summary', 'html', 'article_html',
+                      'meta_description', 'meta_data', 'canonical_link']
+        else:
+            header = ['source_url', 'url', 'title', 'movies', 'text',
+                             'keywords', 'meta_keywords', 'tags', 'authors',
+                             'publish_date', 'summary', 'html', 'article_html',
+                             'meta_description', 'meta_data', 'canonical_link',
+                             'rss_title', 'rss_link', 'rss_id', 'rss_published',
+                             'rss_published_parsed', 'rss_feedburner_origlink',
+                             'paper_section_name']
+        writer.writerow(header)
         for article in newspaper_obj.articles:
             source_url = article.source_url
             url = article.url
@@ -209,18 +278,25 @@ def write_out_articles(csv_output, newspaper_obj):
             meta_description = article.meta_description
             meta_data = article.meta_data
             canonical_link = article.canonical_link
-            rss_title = article.additional_data['rss_title']
-            rss_link = article.additional_data['rss_link']
-            rss_id = article.additional_data['rss_id']
-            rss_published = article.additional_data['rss_published']
-            rss_published_parsed = \
-                article.additional_data['rss_published_parsed']
-            rss_feedburner_origlink = \
-                article.additional_data['rss_feedburner_origlink']
-
-            writer.writerow([source_url, url, title, movies, text, keywords,
-                             meta_keywords, tags, authors, publish_date,
-                             summary, html, article_html, meta_description,
-                             meta_data, canonical_link, rss_title, rss_link,
-                             rss_id, rss_published, rss_published_parsed,
-                             rss_feedburner_origlink])
+            if writeout_type == 'custom':
+                rss_title = article.additional_data['rss_title']
+                rss_link = article.additional_data['rss_link']
+                rss_id = article.additional_data['rss_id']
+                rss_published = article.additional_data['rss_published']
+                rss_published_parsed = \
+                    article.additional_data['rss_published_parsed']
+                rss_feedburner_origlink = \
+                    article.additional_data['rss_feedburner_origlink']
+                data_row = [source_url, url, title, movies, text, keywords,
+                            meta_keywords, tags, authors, publish_date,
+                            summary, html, article_html, meta_description,
+                            meta_data, canonical_link, rss_title, rss_link,
+                            rss_id, rss_published, rss_published_parsed,
+                            rss_feedburner_origlink,
+                            newspaper_obj.description]
+            else:
+                data_row = [source_url, url, title, movies, text, keywords,
+                            meta_keywords, tags, authors, publish_date,
+                            summary, html, article_html, meta_description,
+                            meta_data, canonical_link]
+            writer.writerow(data_row)

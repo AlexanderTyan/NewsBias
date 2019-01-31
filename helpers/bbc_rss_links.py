@@ -12,7 +12,7 @@ BBC_LINKS_DICT = {'news_source_name': 'BBC News',
                            'feed_site_title': 'Home',
                            'feed_rss_link':
                                'http://feeds.bbci.co.uk/news/rss.xml'},
-                          {'feed_python_title': 'bbc news_world',
+                          {'feed_python_title': 'bbc_news_world',
                            'feed_site_title': 'World',
                            'feed_rss_link':
                                'http://feeds.bbci.co.uk/news/world/rss.xml'},
