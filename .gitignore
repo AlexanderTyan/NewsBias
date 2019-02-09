@@ -6,3 +6,4 @@ requirements.txt
 *.json
 .DS_Store
 data/
+*.html
