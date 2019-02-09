@@ -13,6 +13,10 @@ import feedparser as fp  # To parse RSS syntax
 from newspaper import Source  # To build newspaper objects manually
 from newspaper import news_pool  # To multithread the download of articles
 from newspaper import Article
+import re
+
+import gensim
+import spacy
 
 # Constant for keys of info we retain from RSS feeds:
 KEYS_TO_KEEP = ['title', 'link', 'id', 'published', 'published_parsed',
@@ -300,3 +304,66 @@ def write_out_articles(newspaper_obj, filepath, writeout_type='conventional'):
                             summary, html, article_html, meta_description,
                             meta_data, canonical_link]
             writer.writerow(data_row)
+
+
+def clean_text_string(string, keep_dbl_newline=False):
+    """
+    Remove non-meaningful text in a string
+    :param string: string, represents text
+    :return clean_str: string, cleaned text
+    """
+    clean_str = re.sub(r"\nIf you like this story, share it with a friend!",
+                       "", string, flags=re.IGNORECASE)
+    clean_str = re.sub(r"\nLike this story\? Share it with a friend!",
+                       "", clean_str, flags=re.IGNORECASE)
+    clean_str = re.sub(r'\nREAD MORE: .*\n', '', clean_str, flags=re.IGNORECASE)
+    clean_str = re.sub(r'\nREAD MORE\n', '', clean_str, flags=re.IGNORECASE)
+    clean_str = re.sub(r"Media playback is unsupported on your device ",
+                       "", clean_str, flags=re.IGNORECASE)
+    clean_str = re.sub(r"Media caption ", "", clean_str, flags=re.IGNORECASE)
+    clean_str = re.sub(r"Media playback is not supported on this device ", "", clean_str, flags=re.IGNORECASE)
+    clean_str = re.sub(r"bbc radio live", "", clean_str, flags=re.IGNORECASE)
+    clean_str = re.sub(r"bbc sport website", "", clean_str, flags=re.IGNORECASE)
+
+    # A lot of topics have "say" in them, but that does not seem very meaningful,
+    # so drop it:
+    #clean_str = re.sub(r"say", "", clean_str, flags=re.IGNORECASE)
+    #clean_str = re.sub(r"says", "", clean_str, flags=re.IGNORECASE)
+    #clean_str = re.sub(r"said", "", clean_str, flags=re.IGNORECASE)
+
+    # Artifact of web page news:
+    clean_str = re.sub(r"image caption", "", clean_str, flags=re.IGNORECASE)
+    clean_str = re.sub(r"video", "", clean_str, flags=re.IGNORECASE)
+
+    if keep_dbl_newline:
+        # Replace newlines not followed by another newline:
+        clean_str = re.sub(r"\n(?!\n)", "", clean_str)
+    else:
+        clean_str = re.sub(r"\n\n", " ", clean_str)
+        clean_str = re.sub(r"\n", "", clean_str)
+
+    return clean_str
+
+
+# From: https://www.machinelearningplus.com/nlp/topic-modeling-python-sklearn-examples/
+def sent_to_words(sentences):
+    for sentence in sentences:
+        yield(gensim.utils.simple_preprocess(str(sentence),
+                                             deacc=True))  # deacc=True removes punctuations
+
+
+def lemmatization(texts, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
+    """https://spacy.io/api/annotation"""
+
+    # Initialize spacy 'en' model, keeping only tagger component (for efficiency)
+    # Run in terminal: python3 -m spacy download en
+    nlp = spacy.load('en', disable=['parser', 'ner'])
+
+    texts_out = []
+    for sent in texts:
+        doc = nlp(" ".join(sent))
+        texts_out.append(" ".join([token.lemma_ if token.lemma_ not in ['-PRON-']
+                                   else '' for token in doc if token.pos_ in
+                                   allowed_postags]))
+    return texts_out
+
