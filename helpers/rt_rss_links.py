@@ -28,19 +28,7 @@ RT_LINKS_DICT = {'news_source_name': 'RT',
                           'feed_rss_link': 'https://www.rt.com/russia/'},
                          {'feed_python_title': 'rt_business_news',
                           'feed_site_title': 'Business News',
-                          'feed_rss_link': 'https://www.rt.com/business/'},
-                         {'feed_python_title': 'rt_health',
-                          'feed_site_title': 'Health',
-                          'feed_rss_link': 'http://rss.cnn.com/rss/cnn_health.rss'},
-                         {'feed_python_title':'rt_entertainment',
-                          'feed_site_title': 'Entertainment',
-                          'feed_rss_link': 'http://rss.cnn.com/rss/cnn_showbiz.rss'},
-                         {'feed_python_title': 'rt_travel',
-                          'feed_site_title': 'Travel',
-                          'feed_rss_link': 'http://rss.cnn.com/rss/cnn_travel.rss'},
-                         {'feed_python_title': 'rt_most_recent',
-                          'feed_site_title': 'Most Recent',
-                          'feed_rss_link': 'http://rss.cnn.com/rss/cnn_latest.rss'}
+                          'feed_rss_link': 'https://www.rt.com/business/'}
                      ]
                  }
 
