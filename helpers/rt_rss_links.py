@@ -22,13 +22,13 @@ RT_LINKS_DICT = {'news_source_name': 'RT',
                           'feed_rss_link': 'https://www.rt.com/rss/uk/'},
                          {'feed_python_title': 'rt_sport_news',
                           'feed_site_title': 'Sport News',
-                          'feed_rss_link': 'https://www.rt.com/sport/'},
+                          'feed_rss_link': 'https://www.rt.com/rss/sport/'},
                          {'feed_python_title': 'rt_russia_news',
                           'feed_site_title': 'Russia News',
-                          'feed_rss_link': 'https://www.rt.com/russia/'},
+                          'feed_rss_link': 'https://www.rt.com/rss/russia/'},
                          {'feed_python_title': 'rt_business_news',
                           'feed_site_title': 'Business News',
-                          'feed_rss_link': 'https://www.rt.com/business/'}
+                          'feed_rss_link': 'https://www.rt.com/rss/business/'}
                      ]
                  }
 

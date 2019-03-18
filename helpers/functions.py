@@ -10,6 +10,7 @@ from dateutil.parser import parse  # To parse date strings
 import multiprocess
 import csv
 import feedparser as fp  # To parse RSS syntax
+import requests
 from newspaper import Source  # To build newspaper objects manually
 from newspaper import news_pool  # To multithread the download of articles
 from newspaper import Article
@@ -30,6 +31,15 @@ def download_rss_entries(rss_link):
     :return all_entries: list of dictionaries, rss entries
     """
     rss = fp.parse(rss_link)
+    ##TODO: check for good parsing
+    # # If bad rss format (as in RT's business feed)
+    # # (see https://github.com/kurtmckee/feedparser/issues/101#issuecomment
+    # # -380472168):
+    # if not rss['entries'] and "not well-formed" in str(rss['bozo_exception']):
+    #     rss1 = requests.get(rss_link).content.decode("utf-8")
+    #     rss1 = rss1.replace("utf-8", "unicode")
+    #     rss = fp.parse(rss1)
+
     all_entries = rss['entries']
 
     return all_entries
@@ -93,6 +103,7 @@ def build_source(rss_entries, source_head_url, news_source_name,
 
     # Build article list:
     articles = []
+
     for entry in rss_entries:
 
         # Extract RSS metadata:
