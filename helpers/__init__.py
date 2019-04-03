@@ -16,4 +16,5 @@ from .functions import download_rss_entries, \
                        write_out_articles, \
                        parse_paper_articles, \
                        multiprocess_article_downloads, \
-                       sent_to_words
+                       sent_to_words, \
+                       clean_text_string

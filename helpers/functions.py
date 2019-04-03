@@ -317,10 +317,12 @@ def write_out_articles(newspaper_obj, filepath, writeout_type='conventional'):
             writer.writerow(data_row)
 
 
-def clean_text_string(string, keep_dbl_newline=False):
+def clean_text_string(string, keep_dbl_newline=True):
     """
     Remove non-meaningful text in a string
     :param string: string, represents text
+    :param keep_dbl_newline: bool, keep the '\n\n' characters (denoting
+        paragraph break)
     :return clean_str: string, cleaned text
     """
     clean_str = re.sub(r"\nIf you like this story, share it with a friend!",
@@ -329,10 +331,13 @@ def clean_text_string(string, keep_dbl_newline=False):
                        "", clean_str, flags=re.IGNORECASE)
     clean_str = re.sub(r'\nREAD MORE: .*\n', '', clean_str, flags=re.IGNORECASE)
     clean_str = re.sub(r'\nREAD MORE\n', '', clean_str, flags=re.IGNORECASE)
+    clean_str = re.sub(r'\n\nThink your friends would be interested\? Share '
+                       r'this story!', '', clean_str, flags=re.IGNORECASE)
     clean_str = re.sub(r"Media playback is unsupported on your device ",
                        "", clean_str, flags=re.IGNORECASE)
     clean_str = re.sub(r"Media caption ", "", clean_str, flags=re.IGNORECASE)
-    clean_str = re.sub(r"Media playback is not supported on this device ", "", clean_str, flags=re.IGNORECASE)
+    clean_str = re.sub(r"Media playback is not supported on this device ", "",
+                       clean_str, flags=re.IGNORECASE)
     clean_str = re.sub(r"bbc radio live", "", clean_str, flags=re.IGNORECASE)
     clean_str = re.sub(r"bbc sport website", "", clean_str, flags=re.IGNORECASE)
 
@@ -347,8 +352,9 @@ def clean_text_string(string, keep_dbl_newline=False):
     clean_str = re.sub(r"video", "", clean_str, flags=re.IGNORECASE)
 
     if keep_dbl_newline:
-        # Replace newlines not followed by another newline:
-        clean_str = re.sub(r"\n(?!\n)", "", clean_str)
+        # Replace newlines not followed or preceded by another newline
+        # (i.e. keep paragraph breaks):
+        clean_str = re.sub(r"(?<!\n)\n(?!\n)", "", clean_str)
     else:
         clean_str = re.sub(r"\n\n", " ", clean_str)
         clean_str = re.sub(r"\n", "", clean_str)
