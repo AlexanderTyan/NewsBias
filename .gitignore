@@ -8,3 +8,4 @@ requirements.txt
 data/
 *.html
 *.csv
+models/
